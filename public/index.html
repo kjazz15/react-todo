@@ -9,19 +9,41 @@
   </head>
 
   <style>
+	.todo-add {
+		margin-left: 15px;
+	}	
 	
+	h1.big-title {
+		font-size: 2cm;
+		margin: 15px;
+		margin-bottom: 20px;
+	}
 
+	.form-inline {
+		margin-top: 15px;
+	}
+	
+	.main-box {
+		border-style: solid;
+		border-radius: 15px;
+		border-color: white;
+		background: white;
+	}
+
+	body {
+		background: lightGrey;
+	}
 
   </style>
   <body>
-  <div class="container">
+  <div class="container main-box">
   	<div class="row">
-      		<div class="col-md-6 col-md-offset-1">
-          		<h1>Get it done.</h1>
+      		<div class="col-md-6">
+          		<h1 class="big-title">Get it done.</h1>
       		</div>
   	</div>
   	<div class="row">
-  		<div class = "col-md-6 col-md-offset-2">
+  		<div class = "col-md-6">
         		<div id="content"></div>
       		</div>
     	</div>
@@ -40,7 +62,7 @@ var TodoRow = React.createClass({
     },
 
     handleDelete: function() {
-	this.props.deleteComment(this.props.key)
+	this.props.deleteTodo(this.props.key)
     },
 
     render: function() {
@@ -50,7 +72,7 @@ var TodoRow = React.createClass({
         return (
             <tr>
 		<div>
-                	<td>{text}<span onClick = {this.handleDelete}>delete</span></td>
+                	<td>{text}<button className = "btn btn-default" onClick = {this.handleDelete}>Delete</button></td>
 		</div>
             </tr>
         );
@@ -63,10 +85,10 @@ var TodoTable = React.createClass({
 
     render: function() {
         var rows = [];
-	var dc = this.props.deleteComment
+	var dc = this.props.deleteTodo
 	var done = this.props.swapDone
         this.props.todos.forEach(function(todo, index) {
-            rows.push(<TodoRow todo={todo} key={index} deleteComment={dc} swapDone={done}/>) 
+            rows.push(<TodoRow todo={todo} key={index} deleteTodo={dc} swapDone={done}/>) 
         });
         return (
             <table>
@@ -124,7 +146,7 @@ var OverallTodoTable = React.createClass({
 	},
 
 
-    loadCommentsFromServer: function() {
+    loadTodosFromServer: function() {
     	$.ajax({
       		url: this.props.url,
       		dataType: 'json',
@@ -135,17 +157,17 @@ var OverallTodoTable = React.createClass({
   	},
 
     componentDidMount: function () {
-	this.loadCommentsFromServer()
+	this.loadTodosFromServer()
 
 	},
 
     render: function() {
         return (
             <div>
-                <TodoTable todos={this.state.todos} deleteComment={this.handleTodoDelete} swapDone={this.handleTodoToggle} />
+                <TodoTable todos={this.state.todos} deleteTodo={this.handleTodoDelete} swapDone={this.handleTodoToggle} />
 		<form className="form-inline" onSubmit={this.handleTodoAdd}>
-			<input className="form-control col-md-4" ref="newTodo"/>
-          		<button className="btn btn-default">get that in here</button>
+			<input className="form-control" ref="newTodo"/>
+          		<button className="btn btn-default todo-add">Add Todo</button>
 		</form>
             </div>
         );
