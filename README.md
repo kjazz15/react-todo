@@ -2,4 +2,4 @@
 Todo list created w/ reactjs and flask
 
 
-Run with python server.js, open on localhost:3000
+Run with python app.py, open on localhost:3000

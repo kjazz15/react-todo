@@ -1,0 +1,181 @@
+ <html>
+  <head>
+    <title>Hello React</title>
+    <script src="http://fb.me/react-0.9.0.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.9.0.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  </head>
+
+  <style>
+	.todo-add {
+		margin-left: 15px;
+	}	
+	
+	h1.big-title {
+		font-size: 2cm;
+		margin: 15px;
+		margin-bottom: 20px;
+	}
+
+	.form-inline {
+		margin-top: 15px;
+	}
+	
+	.main-box {
+		border-style: solid;
+		border-radius: 15px;
+		border-color: white;
+		background: white;
+	}
+
+	body {
+		background: lightGrey;
+	}
+
+  </style>
+  <body>
+  <div class="container main-box">
+  	<div class="row">
+      		<div class="col-md-6">
+          		<h1 class="big-title">Get it done.</h1>
+      		</div>
+  	</div>
+  	<div class="row">
+  		<div class = "col-md-6">
+        		<div id="content"></div>
+      		</div>
+    	</div>
+  </div>
+
+    <script type="text/jsx">
+
+
+/** @jsx React.DOM */
+
+
+var TodoRow = React.createClass({
+
+    onClick: function () {
+	this.props.swapDone(this.props.key)
+    },
+
+    handleDelete: function() {
+	this.props.deleteTodo(this.props.key)
+    },
+
+    render: function() {
+        var text = this.props.todo.done ?
+            	<h2 style={{'text-decoration':'line-through'}} onClick = {this.onClick} className="done">{this.props.todo.text}</h2> :
+                <h2 onClick = {this.onClick} className="not-done">{this.props.todo.text}</h2>
+        return (
+            <tr>
+		<div>
+                	<td>{text}<button className = "btn btn-default" onClick = {this.handleDelete}>Delete</button></td>
+		</div>
+            </tr>
+        );
+    }
+});
+
+
+
+var TodoTable = React.createClass({
+
+    render: function() {
+        var rows = [];
+	var dc = this.props.deleteTodo
+	var done = this.props.swapDone
+        this.props.todos.forEach(function(todo, index) {
+            rows.push(<TodoRow todo={todo} key={index} deleteTodo={dc} swapDone={done}/>) 
+        });
+        return (
+            <table>
+                <tbody>{rows}</tbody>
+            </table>
+        	);
+	}
+});
+
+
+var OverallTodoTable = React.createClass({
+ 
+    getInitialState: function() {
+
+		return {todos: []}
+	},
+
+
+    syncTodos: function() {
+	currentTodos = JSON.stringify((this.state.todos))
+      	$.ajax({
+        	url: this.props.url,
+        	dataType: 'json',
+        	type: 'POST',
+        	data: currentTodos,
+		contentType:"application/json; charset=utf-8",
+        	success: function(data) {
+			console.log(data)
+          		this.setState({todos: data});
+        	}.bind(this)
+    		});
+  	},
+    
+    handleTodoToggle: function(index) {
+
+	     	var currentTodos = this.state.todos
+                currentTodos[index].done = !(currentTodos[index].done)
+                this.setState({todos: currentTodos}, this.syncTodos())
+	},
+
+
+    handleTodoDelete: function(index) {
+		var currentTodos = this.state.todos
+		currentTodos.splice(index, 1)	
+		this.setState({todos: currentTodos}, this.syncTodos())
+	},
+
+    handleTodoAdd: function(e) {
+		e.preventDefault()
+                var todoText = this.refs.newTodo.getDOMNode().value.trim();
+                var currentTodos = this.state.todos
+                var newTodo = ({text: todoText, done: false})
+                currentTodos.push(newTodo)
+		this.setState({todos: currentTodos}, this.syncTodos())
+	},
+
+
+    loadTodosFromServer: function() {
+    	$.ajax({
+      		url: this.props.url,
+      		dataType: 'json',
+      		success: function(data) {
+        		this.setState({todos: data});
+      		}.bind(this)
+    		});
+  	},
+
+    componentDidMount: function () {
+	this.loadTodosFromServer()
+
+	},
+
+    render: function() {
+        return (
+            <div>
+                <TodoTable todos={this.state.todos} deleteTodo={this.handleTodoDelete} swapDone={this.handleTodoToggle} />
+		<form className="form-inline" onSubmit={this.handleTodoAdd}>
+			<input className="form-control" ref="newTodo"/>
+          		<button className="btn btn-default todo-add">Add Todo</button>
+		</form>
+            </div>
+        );
+    }
+});
+
+var overall = React.renderComponent(<OverallTodoTable url="todos.json" />, document.getElementById('content'));
+
+    </script>
+  </body>
+</html>
