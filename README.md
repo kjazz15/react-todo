@@ -2,7 +2,9 @@
 Todo list created w/ reactjs and flask
 
 <code>source venv/bin/activate</code> to start virtual environment
+
 <code>pip install requirements.txt</code> to install dependencies
+
 <code>python app.py</code> to run, it's on localhost:3000
 
 Type in Todos to add them
