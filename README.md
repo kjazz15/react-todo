@@ -7,9 +7,9 @@ Todo list created w/ reactjs and flask
 
 <code>python app.py</code> to run, it's on localhost:3000
 
-Type in Todos to add them
-Click delete under todos to remove them
-Click the todo itself to cross it off or un-cross it off
+Type in Todos to add them, 
+Click delete under todos to remove them, 
+Click the todo itself to cross it off or un-cross it off, 
 
 
-Get it done!
+**Get it done!**
